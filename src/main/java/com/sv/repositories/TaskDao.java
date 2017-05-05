@@ -36,7 +36,7 @@ public class TaskDao extends TrackerDaoFactory {
 		
 		List<Task> taskList = new ArrayList<>(1);
 		try {
-			String sql = "select task.*, user.username,user.first_name, user.last_name, schedule.user_story "
+			String sql = "select task.*, user.username,user.first_name, user.last_name, schedule.userstory_id "
 					+ " from task "
 					+ " join user on task.user_id = user.user_id "
 					+ " left join schedule on schedule.schedule_id = task.schedule_id ";
@@ -65,10 +65,12 @@ public class TaskDao extends TrackerDaoFactory {
 		Task task = null;
 		
 		try {
-			String sql = "select task.* , schedule.schedule_id, schedule.user_story, schedule.phase, "
-					+ " user.user_id, user.username, user.last_name, user.first_name "
+			String sql = "select task.* , schedule.schedule_id, schedule.userstory_id, schedule.phase, userstory.userstory, "
+					+ " project.project_uid, user.user_id, user.username, user.last_name, user.first_name "
 					+ " from task left join schedule on task.schedule_id = schedule.schedule_id "
 					+ " left join user on task.user_id = user.user_id "
+					+ " left join userstory on userstory.userstory_id = schedule.userstory_id "
+					+ " left join project on project.project_id = userstory.project_id "
 					+ " where task.task_id = :taskId";
 			
 			MapSqlParameterSource param = new MapSqlParameterSource();
@@ -97,8 +99,10 @@ public class TaskDao extends TrackerDaoFactory {
 		logger.info(ApplicationConstants.LOG_ENTRY_MESSAGE);		
 		
 		try {
-			String sql = "insert into task(user_id, application_id, schedule_id, task_name, task_desc, start_date, end_date, hours_of_work, status, comment) "
-					+ " values (:userId, :applicationId, :scheduleId, :taskName, :taskDesc, :startDate, :endDate, :hoursOfWork, :status, :comment)";
+			String sql = "insert into task(user_id, application_id, schedule_id, task_name, task_desc, start_date, end_date, hours_of_work, status, progress, "
+					+ "review_progress, other_progress, comment) "
+					+ " values (:userId, :applicationId, :scheduleId, :taskName, :taskDesc, :startDate, :endDate, :hoursOfWork, :status,:progress,"
+					+ ":reviewProgress, :otherProgress, :comment)";
 			
 			
 			KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -132,7 +136,8 @@ public class TaskDao extends TrackerDaoFactory {
 			String sql = "update task "
 					+ " set user_id=:userId, application_id=:applicationId, schedule_id=:scheduleId, "
 					+ " task_name=:taskName, task_desc=:taskDesc, start_date=:startDate, end_date=:endDate, "
-					+ " hours_of_work=:hoursOfWork, status=:status, comment=:comment "
+					+ " hours_of_work=:hoursOfWork, status=COALESCE(:status,status), progress=:progress, review_progress=:reviewProgress, "
+					+ " other_progress=:otherProgress, comment=:comment "
 					+ " where task_id=:taskId";
 			
 			

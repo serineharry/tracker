@@ -108,6 +108,7 @@ public class UserstoryService extends TrackerServiceFactory{
 						
 						if(task != null)
 						{
+							task.setStatus("Active");
 							taskDao.addTask(task);
 							if(task.getTaskId() > 0)
 							{
@@ -216,7 +217,9 @@ public class UserstoryService extends TrackerServiceFactory{
 			task.setStartDate(sched.getStartDate());
 			task.setEndDate(sched.getEndDate());
 			task.setHoursOfWork(res.getHoursAssigned());
-			task.setStatus("Active");
+			task.setProgress(res.getProgress());
+			task.setReviewProgress(res.getReviewProgress());
+			task.setOtherProgress(res.getOtherProgress());
 		}
 		return task;		
 	}

@@ -20,14 +20,20 @@ public class Task {
 	private Date endDate;
 	private Double hoursOfWork;
 	private String status;
+	private Integer progress; 
+	private Integer reviewProgress;
+	private Integer otherProgress;
+	
 	private String comment;
 	
 	private String username;
 	private String lastName;
 	private String firstName;
-	private String userStory;
-	private String projectName;
+	private String userstory;
+	private String projectUid;
 	private String release;
+	
+	
 		
 	public int getTaskId() {
 		return taskId;
@@ -89,6 +95,24 @@ public class Task {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	public Integer getProgress() {
+		return progress;
+	}
+	public void setProgress(Integer progress) {
+		this.progress = progress;
+	}
+	public Integer getReviewProgress() {
+		return reviewProgress;
+	}
+	public void setReviewProgress(Integer reviewProgress) {
+		this.reviewProgress = reviewProgress;
+	}
+	public Integer getOtherProgress() {
+		return otherProgress;
+	}
+	public void setOtherProgress(Integer otherProgress) {
+		this.otherProgress = otherProgress;
+	}
 	public String getComment() {
 		return comment;
 	}
@@ -114,17 +138,17 @@ public class Task {
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	public String getUserStory() {
-		return userStory;
+	public String getUserstory() {
+		return userstory;
 	}
-	public void setUserStory(String userStory) {
-		this.userStory = userStory;
+	public void setUserstory(String userstory) {
+		this.userstory = userstory;
 	}
-	public String getProjectName() {
-		return projectName;
+	public String getProjectUid() {
+		return projectUid;
 	}
-	public void setProjectName(String projectName) {
-		this.projectName = projectName;
+	public void setProjectUid(String projectUid) {
+		this.projectUid = projectUid;
 	}
 	public String getRelease() {
 		return release;

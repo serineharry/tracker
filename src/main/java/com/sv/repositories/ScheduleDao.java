@@ -1,6 +1,9 @@
 package com.sv.repositories;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,16 +17,48 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.sv.framework.ApplicationConstants;
+import com.sv.framework.DynamicQueryGenerator;
 import com.sv.framework.TrackerDaoFactory;
+import com.sv.framework.TrackerMapSqlParameterSource;
 import com.sv.framework.exceptions.TrackerException;
 import com.sv.vo.Resource;
 import com.sv.vo.Schedule;
+import com.sv.vo.SearchCriteria;
 
 @Repository
 public class ScheduleDao extends TrackerDaoFactory {
 	
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 	
+	
+	public List<Schedule> searchSchedules(List<SearchCriteria> searchCriteriaList) throws TrackerException {
+
+		logger.info(ApplicationConstants.LOG_EXIT_MESSAGE);
+		
+		List<Schedule> scheduleList = new ArrayList<>(1);
+		try {
+			String sql = "select schedule.*, userstory.userstory, userstory.userstory_desc, project.project_uid "
+					+ " from schedule, userstory, project "
+					+ " where schedule.userstory_id = userstory.userstory_id "
+					+ " and userstory.project_id = project.project_id";
+			
+			sql = DynamicQueryGenerator.generateSearch(sql, getJoiner(), searchCriteriaList);
+			
+			SqlParameterSource param = TrackerMapSqlParameterSource.mapSearchCriteria(searchCriteriaList);
+	        	        			
+			scheduleList = getNamedParameterJdbcTemplate().query(sql, param, new BeanPropertyRowMapper<>(Schedule.class));
+			
+		} catch (DataAccessException e) {
+			logger.error("DataAccessException:", e);
+			throw new TrackerException("1000", "Exception while fetching SearchCriteria");
+		} finally {
+			logger.info(ApplicationConstants.LOG_EXIT_MESSAGE);
+		}
+		
+		return scheduleList;		
+	
+	}
+
 	
 	public List<Schedule> getUserstorySchedules(int userstoryId) throws TrackerException {
 
@@ -54,10 +89,8 @@ public class ScheduleDao extends TrackerDaoFactory {
 		logger.info(ApplicationConstants.LOG_ENTRY_MESSAGE);
 		
 		try {
-			String sql = "insert into schedule(userstory_id, phase, days, start_date, end_date, implementation_status, "
-					+ " review_status, testing_status, comments)"
-					+ " values (:userstoryId, :phase, :days, :startDate, :endDate, :implementationStatus, "
-					+ " :reviewStatus, :testingStatus, :comments)";
+			String sql = "insert into schedule(userstory_id, phase, days, start_date, end_date)"
+					+ " values (:userstoryId, :phase, :days, :startDate, :endDate)";
 			
 			KeyHolder keyHolder = new GeneratedKeyHolder();
 			SqlParameterSource param = new BeanPropertySqlParameterSource(sched);	        			
@@ -85,16 +118,12 @@ public class ScheduleDao extends TrackerDaoFactory {
 		logger.info(ApplicationConstants.LOG_ENTRY_MESSAGE);
 		
 		try {
-			String sql = "update schedule"
+			String sql = "update schedule "
 					+ "set userstory_id = :userstoryId, "
 					+ " phase = :phase, "
 					+ " days = :days, "
 					+ " start_date = :startDate, "
-					+ " end_date = :endDate, "
-					+ " implementation_status = :implementationStatus, "
-					+ " review_status = :reviewStatus, "
-					+ " testing_status = :testingStatus, "
-					+ " comments = :comments "
+					+ " end_date = :endDate "
 					+ "where schedule_id = :scheduleId";
 			
 			SqlParameterSource param = new BeanPropertySqlParameterSource(sched);	        			
@@ -173,7 +202,7 @@ public class ScheduleDao extends TrackerDaoFactory {
 		
 		try {
 			String sql = "select user.username, user.last_name, user.first_name, task.task_id, task.user_id, "
-					+ " task.hours_of_work as hoursAssigned "
+					+ " task.hours_of_work as hoursAssigned, task.progress, task.review_progress, task.other_progress "
 					+ " from task, user "
 					+ " where task.user_id = user.user_id "
 					+ " and task.status = 'Active' "
@@ -194,10 +223,16 @@ public class ScheduleDao extends TrackerDaoFactory {
 		return schedList;		
 	
 	}
-
-
-
-
 	
+	private Map<String, String> getJoiner() {
+		Map<String, String> joiner = new HashMap<String, String>();
+		joiner.put("Phase", "schedule.phase");
+		joiner.put("Days", "schedule.days");
+		joiner.put("Start Date", "schedule.start_date");
+		joiner.put("End Date", "schedule.end_date");
+		joiner.put("Application Id", "userstory.application_id");
+		return joiner;
+	}
+
 
 }

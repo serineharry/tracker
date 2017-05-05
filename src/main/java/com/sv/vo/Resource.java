@@ -22,6 +22,13 @@ public class Resource implements Serializable {
 	private String mode;
 	private Integer taskId;
 	
+	// used on userstory
+	private Integer progress;
+	private Integer reviewProgress;
+	private Integer otherProgress;
+	
+		
+	
 	public Resource() {
 	}
 
@@ -119,5 +126,29 @@ public class Resource implements Serializable {
 
 	public void setTaskId(Integer taskId) {
 		this.taskId = taskId;
+	}
+
+	public Integer getProgress() {
+		return progress;
+	}
+
+	public void setProgress(Integer progress) {
+		this.progress = progress;
+	}
+
+	public Integer getReviewProgress() {
+		return reviewProgress;
+	}
+
+	public void setReviewProgress(Integer reviewProgress) {
+		this.reviewProgress = reviewProgress;
+	}
+
+	public Integer getOtherProgress() {
+		return otherProgress;
+	}
+
+	public void setOtherProgress(Integer otherProgress) {
+		this.otherProgress = otherProgress;
 	}
 }

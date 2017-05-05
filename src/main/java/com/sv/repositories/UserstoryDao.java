@@ -85,8 +85,8 @@ public class UserstoryDao extends TrackerDaoFactory {
 		logger.info(ApplicationConstants.LOG_ENTRY_MESSAGE);
 		
 		try {
-			String sql = "insert into schedule(project_id, application_id, user_story, user_story_desc, interfaces, dependencies, external_date, comments)"
-					+ "values (:projectId, :userStory, :userStoryDesc, :interfaces, :dependencies, :externalDate, :comments)";
+			String sql = "insert into userstory(project_id, application_id, userstory, userstory_desc, interfaces, dependencies, external_date, comments)"
+					+ "values (:projectId, :userstory, :userstoryDesc, :interfaces, :dependencies, :externalDate, :comments)";
 			
 			KeyHolder keyHolder = new GeneratedKeyHolder();
 			SqlParameterSource param = new BeanPropertySqlParameterSource(sched);
@@ -115,10 +115,10 @@ public class UserstoryDao extends TrackerDaoFactory {
 		logger.info(ApplicationConstants.LOG_ENTRY_MESSAGE);
 		
 		try {
-			String sql = "update user_story "
+			String sql = "update userstory "
 					+ " set project_id = :projectId, "
-					+ " user_story = :userStory, "
-					+ " user_story_desc = :userStoryDesc, "
+					+ " userstory = :userstory, "
+					+ " userstory_desc = :userstoryDesc, "
 					+ " interfaces = :interfaces, "
 					+ " dependencies = :dependencies, "
 					+ " external_date = :externalDate, "
