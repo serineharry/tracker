@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration>
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<!-- Log message format -->
+		<encoder>
+			<pattern>%d %-5level %logger %M- %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+		
+	<appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+    <!-- in the absence of the class attribute, it is assumed that the
+         desired discriminator type is
+         ch.qos.logback.classic.sift.MDCBasedDiscriminator -->
+    <discriminator>
+      <key>app_id</key>
+      <defaultValue>unknown</defaultValue>
+    </discriminator>
+    <sift>
+      <appender name="FILE-${app_id}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <!-- <appender name="FILE-${app_id}" class="ch.qos.logback.core.FileAppender"> -->
+        <file>c:\\logs\\${app_id}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        	<fileNamePattern>c:\\logs\\${app_id}_%d{yyyy_MM_dd}.log</fileNamePattern>
+        	<!-- <maxHistory>30</maxHistory> -->
+        </rollingPolicy>
+        <encoder>
+        	<!-- <pattern>%d %thread %highlight(%-5level) [%-55.55logger{50}] [%-30.30M]- %msg%n</pattern> -->
+        	<pattern>%d %thread %-5level %-55.55logger{50} %-30.30M - %msg%n</pattern>
+        </encoder>
+      </appender>
+    </sift>
+  </appender>
+	
+	<logger name="com.att.gps.restapi" level="debug" additivity="false">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="SIFT" />
+	</logger>
+	<logger name="org.springframework" level="info" additivity="false">
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
+	<!-- Setting the root level of logging to INFO -->
+	<root level="info">
+		<appender-ref ref="CONSOLE" />
+	</root>
+</configuration>
